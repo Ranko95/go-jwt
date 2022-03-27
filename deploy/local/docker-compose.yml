@@ -1,0 +1,27 @@
+version: "3.7"
+services:
+  mongo:
+    restart: unless-stopped
+    image: mongo:4.2.19-bionic
+    hostname: mongo
+    volumes:
+      - go-jwt-mongo:/data/db
+    ports:
+      - 57001:27017
+
+  auth:
+    restart: unless-stopped
+    build:
+      context: ../../services/auth
+      dockerfile: Dockerfile
+    environment:
+      - MONGO_URL=mongodb://mongo:27017
+      - MONGO_DB_NAME=go-jwt
+      - WAIT_HOSTS=mongo:27017
+    depends_on:
+      - mongo
+    links:
+      - mongo
+
+volumes:
+  go-jwt-mongo: {}
